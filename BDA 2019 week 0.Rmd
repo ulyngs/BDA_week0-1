@@ -11,7 +11,7 @@ output:
 ## Overview
 This introductory lecture is purely optional and does not contain anything that you will be assessed on. 
 It is intended as a primer for the course and so that we can handle any technical issues before we get into the content. 
-If you have any questions please just ask now or email me at ulrik.lyngs\@cs.ox.ac.uk
+If you have any questions please just ask now or email me at ulrik.lyngs@cs.ox.ac.uk
 
 Today we will look at:
 - R, RStudio and R Packages
