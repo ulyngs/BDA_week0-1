@@ -9,20 +9,18 @@ output:
 # BDA Week 0 notes
 
 ## Overview
-This introductory lecture is purely optional and does not contain anything that you will be assessed on. 
-It is intended as a primer for the course and so that we can handle any technical issues before we get into the content. 
+This a technical primer that doesn't contain anything you will be assessed on, but is for us to touch on a few technical issues before we get into the content.
 If you have any questions please just ask now or email me at ulrik.lyngs@cs.ox.ac.uk
 
-Today we will look at:
+We will run over:
 - R, RStudio and R Packages
-- knitr / RMarkdown
+- R Markdown
 - ggplot2
 - the 'rBDA' package
 - Some basic stats
 - Google and Stack Overflow
 - Knitting the code into an html document
 
-We anticipate this taking under an hour, which will leave plenty of time to troubleshoot any technical problems.
 
 ### Setup
 The document you are looking at is an 'R Markdown' document, as we will explain below.
@@ -41,9 +39,7 @@ fun_check_packages <- function(x){
 
 # check if the tools we need are installed
 packs <- c('dplyr','ggplot2', 'knitr', 'ggthemes','devtools', 'gridExtra')
-fun_check_packages(packs); rm(packs, fun_check_packages)
-
-gc()
+fun_check_packages(packs)
 
 options(scipen = 10) # makes the output more readable by increasing the number of values before scientific notation is used.
 ```
@@ -92,20 +88,20 @@ If you are using a function and you can't remember what input params or optional
 ```
 
 #### RStudio Projects
-The materials for each week contain a 'Project' file, that is, a file ending in the extention .Rproj.
+The materials for each week contain a 'Project' file, that is, a file ending in the extension .Rproj.
 
-RStudio projects are a fantastic way to make sure R (and yourself) knows where to look for files. Basically, when you open an RStudio project file, R's working directory is automatically set to wherever folder on your computer contains that project file. This makes it *much* easier to share your work with other people, because you won't be trying to read in files using a filepath that is effectively `~/path/that/only/exist/on/my/computer.csv`.
+RStudio projects is practic for making sure R (and yourself) knows where to look for files. Basically, when you open an RStudio project file, R's working directory is automatically set to wherever folder on your computer contains that project file. This makes it much easier to share your work with other people, because you won't be trying to read in files using a filepath that is effectively `~/path/that/only/exist/on/my/computer.csv`.
 
-Every week, you should open RStudio by opening the R Project file in the materials for that week - then, you should be able to run the R Markdown files without any trouble. 
+Every week, open RStudio by opening the R Project file in the materials for that week - then, you should be able to run the content in the R Markdown file without any trouble. 
 
 ### R Markdown
-R Markdown is a fantastic tool that allow us to mix normal text written in the very simple 'markdown' syntax (see https://en.wikipedia.org/wiki/Markdown) with chunks of code. It's a bit like Jupyter notebooks, which people use for Python, only better...
+R Markdown is a fantastic tool that allow us to mix normal text written in the very simple 'markdown' syntax (see https://en.wikipedia.org/wiki/Markdown) with chunks of code. It's a bit like Jupyter notebooks, that people use for Python, but only better...
 
-An R Markdown document is a plain text file that you can open in any text editor. But when you open it in RStudio, you can run the chunks of code and use it as an interactive notebook. You can also export the document to other formats, such as a Microsoft Word or HTML document, using the 'Knit' button. (You could write your homework assignments this way)
+An R Markdown document is a plain text file that you can open in any text editor. When you open it in RStudio, you can run the chunks of code and use it as an interactive notebook. You can also export ('knit') the document to other formats, such as a Microsoft Word or HTML document, using the 'Knit' button. (You could write your homework assignments this way!)
 
-To run code one line at a time, click on a line of code and press 'cmd' + 'return'. To run all the code in a chunk, press 'cmd', 'shift' and 'return'.
+To run code one line at a time, click on a line of code and press 'cmd' + 'return'. To run all the code in a chunk, press 'cmd', 'shift' and 'return', or click the green 'play' button on the top right in a code chunk.
 
-When you knit your code into, for example, an HTML file, you can control the output. If you want to have all of the input and the output in your knitted document then leave it as it is:
+When you knit your code to, for example, an HTML file, you can control the output. If you want to have all of the input and the output in your knitted document then leave it as it is:
 
 ```{r knit-1}
 x <- 123
@@ -145,28 +141,28 @@ With ggplot2 you want to create layers of graphics, this is the 'grammar of grap
 
 ```{r ggplot1, echo=T}
 # generate some test data
-df <- data.frame(x = seq(1,100, by = 7),
-                y = seq(1,100, by = 7))
+df <- data.frame(first_variable = seq(1,100, by = 7),
+                second_variable = seq(1,100, by = 7))
 
-ggplot2::ggplot(df, aes(x,y))
+ggplot2::ggplot(df, aes(x = first_variable, y = second_variable))
 # the first argument is the dataframe - here it is 'df' as that is the name of our dataframe
 # the second and third arguments are in aes() which stands for 'aesthetic' - these are the variables you want to plot
 
 # Running the line above makes an empty graph. We need to add in the geometry we want to plot
-ggplot(df, aes(x,y)) +
+ggplot(df, aes(x = first_variable, y = second_variable)) +
   geom_line()
 
 # we could also plot other geometries
-ggplot(df, aes(x,y)) +
+ggplot(df, aes(x = first_variable, y = second_variable)) +
   geom_point()
 
 # or several at once
-ggplot(df, aes(x,y)) +
+ggplot(df, aes(x = first_variable, y = second_variable)) +
   geom_line() +
   geom_point()
 
 # we can adjust many arguments for each type of geometry, such as color and size
-ggplot(df, aes(x,y)) + 
+ggplot(df, aes(x = first_variable, y = second_variable)) +
   geom_line(color = 'red', size = 10) + 
   geom_point(color = 'yellow', size = 1) # tho, obviously, never actually make a graph this ugly...
 
@@ -175,22 +171,20 @@ ggplot(df, aes(x,y)) +
 It is possible to plot two graphs at the same time (using data from a single dataframe) using (i) facet wrap and (ii) a third factor variable
 
 ```{r ggplot2, echo=T}
-# genearate data
+# generate data
 df1 = data.frame(x = rep(seq(1,100),2), 
                    y = c(seq(1,100),seq(100,1)),
                  z = c(rep('a', 100), rep('b', 100)))
 
 # plot using facet wrap
-ggplot(df1,
-       aes(x,y)) +
+ggplot(df1, aes(x,y)) +
   facet_wrap(~z) +
   geom_line()
     # facet wrap splits the data into separate graphs based on a third variable in the dataframe (here, 'z')
     # it is incredibly useful for subsetting by a variable and producing many graphs at once
 
 # Alternatively, we can invoke a third variable as a factor and plot the two lines on one graph
-ggplot(df1,
-       aes(x,y, color = z)) +
+ggplot(df1, aes(x,y, color = z)) +
   geom_line()
 ```
 
@@ -198,29 +192,24 @@ There's lots of options to adjusting your plots in ggplot2
 
 ```{r ggplot3, echo=T}
 # we can adjust the axis scales on ggplot graphs easily using xlim() and ylim()
-ggplot(df,
-       aes(x,y)) + 
+ggplot(df, aes(first_variable, second_variable)) +
   geom_line(color = 'blue',
             size = 1) +
   xlim(0, 1000) + 
   ylim(0,250) #obviously, this actually looks quite stupid...
 
 # and we can adjust the x and y axis labels and add a title
-ggplot(df,
-       aes(x,y)) + 
+ggplot(df, aes(first_variable, second_variable)) +
   geom_line(color = 'blue',
             size = 1) +
-  xlab('some variable') +
-  ylab('another variable') +
-  ggtitle('a plot to show how to use ggplot2')
+  labs(x = "some variable", y = "another variable", title = "a plot to show how to use ggplot2")
       # As a warning - often ggplot titles look a bit odd when you paste the graphic elsewhere, such as into word. Sometimes it's better to not put a title onto the graph itself and just write one out in the text.
 
 # annotate the graph
-ggplot(df,
-       aes(x,y)) + 
+ggplot(df, aes(first_variable, second_variable)) +
   geom_line(color = 'blue',
             size = 1) +
-  ggtitle('a plot to show how to use ggplot2') +
+  labs(title = "a plot to show how to use ggplot2") +
   annotate("text",
            x = 25, 
            y = 90, 
@@ -232,13 +221,10 @@ ggplot(df,
 To make your graphics look nicer, and if you're super pernickety, you can manually adjust lots of parameters...
 
 ```{r ggplot4, echo=T}
-ggplot(df,
-       aes(x,y)) + 
+ggplot(df, aes(first_variable, second_variable)) +
   geom_line(color = 'blue',
             size = 1) +
-  ggtitle('a plot showing how to use ggplot2') +
-  xlab('some variable') +
-  ylab('another variable') +
+  labs(x = "some variable", y = "another variable", title = "a plot to show how to use ggplot2") +
   theme(title = element_text(size = 16,
                              face='bold'), # adjust the plot title
                  axis.text.y = element_blank(), # remove any values from the y axis
@@ -253,42 +239,23 @@ ggplot(df,
                  )
 ```
 
-Or you can use the cowplot package (highly recommended):
-
-```{r ggplot5, echo=T}
-#install.packages('cowplot')
-library(cowplot)
-
-ggplot(df,
-       aes(x,y)) + 
-  geom_line(color = 'blue',
-            size = 1) +
-  ggtitle('Cowplot is great') +
-  annotate("text",
-           x = 25,
-           y = 90,
-           label = "Something insightful",
-           size  = 8)
-
-```
-
 And to save your output
 
 ```{r ggplot6, echo = T}
-plot.out = ggplot(df, aes(x,y)) + 
+plot_out <- ggplot(df, aes(first_variable, second_variable)) +
   geom_line(color = 'blue',
             size = 1) +
-  ggtitle('Cowplot is great') +
+  labs(title = "a plot to show how to use ggplot2") +
   annotate("text",
-           x = 25,
+           x = 25, 
            y = 90, 
            label = "Something insightful", 
            size  = 8)
 
-plot.out
+plot_out
 
-ggsave("plot.out.pdf", 
-       plot = plot.out,
+ggsave("plot_out.pdf", 
+       plot = plot_out,
        width = 20, 
        height = 10,
        units = 'cm') # adjust these values to produce a graph which is the right height / width
@@ -333,7 +300,7 @@ rBDA is a package that Bertie Vidgen and Taha Yasseri specially created for the 
 (i) plot error bars on binned continuous data, 
 (ii) calculate and plot autocorrelated and crosscorrelated values robustly, 
 (iii) make panelled scatterplots and 
-(iv) calculate values with a moving time window. 
+(iv) calculate values with a moving time window.
 
 There are also some other functions which you can access but they aren't terribly exciting (like sd_pop which calculates population level standard deviation)
 
@@ -342,14 +309,14 @@ All we want to do today is just check that the functions are working. Run the co
 ```{r BDA}
 # generate test data
 set.seed(1)
-df = data.frame(x = seq(1, 100),
+df <- data.frame(x = seq(1, 100),
                 y = rnorm(100,50,10))
 
 # generate some more test data
 set.seed(101)
-x = rnorm(1000, mean=10, sd=10)
-y = x + rnorm(1000 ,mean=1, sd=5)
-y = c(y[901:1000], y[1:900]) 
+x <- rnorm(1000, mean=10, sd=10)
+y <- x + rnorm(1000 ,mean=1, sd=5)
+y <- c(y[901:1000], y[1:900]) 
 df.test2 = data.frame(x, y); rm(x,y)
 
 
@@ -358,7 +325,7 @@ rBDA::error_bars(df)
 
 # 2. CCF
 # NOTE: this output will not 'knit' (see below), so comment out these three lines when knitting the document
-out = rBDA::cor_fun(df$x, df$y, lag.max = 10)
+out <- rBDA::cor_fun(df$x, df$y, lag.max = 10)
 out$fit_best; out$wrap; out$conf.int
 rBDA::cor_plot(out)
 
