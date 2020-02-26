@@ -156,18 +156,21 @@ ent_calc / ent_max
 ```
 
 
-### Example with wikipedia dataset
+### Example with wikipedia data
 Here is an example, using wikipedia data that came from this query:
 
 USE simplewiki_p;
 SELECT * FROM page LIMIT 100;
 
-Let's draw a histogram:
+Let's read in the data
+```{r}
+page_query <- read.csv("2020-02-26_page_query.csv")
+```
+
+
+Now, let's draw a histogram:
 
 ```{r}
-library(dplyr)
-page_query <- read.csv("2020-02-26_page_query.csv")
-
 ggplot(page_query, aes(page_len)) +
   geom_histogram()
 ```
