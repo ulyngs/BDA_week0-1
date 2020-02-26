@@ -70,8 +70,9 @@ You can then use the functions in this package, the same as you would with packa
 One risk in loading many packages at once is that they will have functions with the same names. Obviously, this is not ideal as R won't know which function you are trying to use. The issue can be resolved by using the :: syntax, which makes it explicit which package a function comes from.
 
 ```{r package-3}
-df <- data.frame('x' = seq(1,100))
+df <- data.frame('x' = rep(1:2,50))
 df
+
 
 nrow(dplyr::distinct(df))
 
@@ -90,7 +91,7 @@ If you are using a function and you can't remember what input params or optional
 #### RStudio Projects
 The materials for each week contain a 'Project' file, that is, a file ending in the extension .Rproj.
 
-RStudio projects is practic for making sure R (and yourself) knows where to look for files. Basically, when you open an RStudio project file, R's working directory is automatically set to wherever folder on your computer contains that project file. This makes it much easier to share your work with other people, because you won't be trying to read in files using a filepath that is effectively `~/path/that/only/exist/on/my/computer.csv`.
+Using RStudio projects is best practice for making sure R (and yourself) knows where to look for files. Basically, when you open an RStudio project file, R's working directory is automatically set to wherever folder on your computer contains that project file. This makes it much easier to share your work with other people, because you won't be trying to read in files using a filepath that is effectively `~/path/that/only/exist/on/my/computer.csv`.
 
 Every week, open RStudio by opening the R Project file in the materials for that week - then, you should be able to run the content in the R Markdown file without any trouble. 
 
