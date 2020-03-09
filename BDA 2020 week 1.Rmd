@@ -4,16 +4,14 @@ author: "Ulrik Lyngs (based on Bertie Vidgen's materials)"
 date: "Last updated: 9 March 2020"
 output: html_document
 ---
- 
+
 # BDA Week 1 notes
-This week we look at how to quantify the spread of a distribution using the Gini coefficient and shannon entropy. We will also plot a histogram and calculate the mode.
+This week we look at how to quantify the spread of a distribution using the Gini coefficient and shannon entropy. We will also plot a histogram and calculate the mode. We provide examples with the 'mtcars' dataset (comes with R) and some sample wikipedia data.
 
 Set up the R workspace and load the required packages/data.
 
 ```{r setup, echo=FALSE, warning=FALSE, message=FALSE}
 options(scipen = 10) #makes the output more readable by increasing the number of values before scientific notation is used.
-
-
 
 fun_check_packages <- function(x){
   for (i in seq(1,length(x))){
@@ -27,9 +25,9 @@ fun_check_packages(packs)
 ```
 
 ### Data
-In the code below, we calculate the gini coefficient and then plot the lorenz curve for the 'mtcars' dataset. This comes with every installation of R. You can apply the code to the data you've collected from Wikipedia.
+In the code below, we calculate the gini coefficient and then plot the lorenz curve for the 'mtcars' dataset. This dataset comes with every installation of R. You can apply the code to the data you've collected from Wikipedia.
 
-We are going to look at the 'disp' variable in the dataset 'mtcars', which has data for 32 cars from 1973-74 on various variables and is built in to R. 'disp' stands for displacement and something about how the cars' engine is structured. 
+We are going to look at the 'disp' variable in the dataset 'mtcars', which has data for 32 cars from 1973-74 on various variables and is built in to R. 'disp' stands for displacement which says something about how the cars' engines are structured. 
 
 ```{r}
 mtcars
@@ -72,11 +70,10 @@ Here's an alternative approach that might be more transparent.
 The '%>%' operator is from the `dplyr` package and simply means 'then do this'.
 
 ```{r}
-# take the mtcars dataset, then group it by the amount of 'disp', then count how many times they occur 
+# take the mtcars dataset, count number of rows for each entry in 'disp'
 mtcars %>% 
-  group_by(disp) %>% 
-  count() %>% 
-  arrange(desc(n))
+  count(disp) %>% 
+  arrange( desc(n) )
 
 ```
 
@@ -101,7 +98,8 @@ ineq::ineq(mtcars$disp,
 ```
 
 The `Lc` function from the `ineq` package calculates values for the Lorenz curve. 
-We can use this to plot the Lorenz curve with base R like this:
+We plot the Lorenz curve with base R like this:
+
 ```{r}
 plot(ineq::Lc(mtcars$disp),
      col = 'red',
@@ -114,7 +112,8 @@ Or with ggplot like this:
 lorenz_data <- ineq::Lc(mtcars$disp)
 
 # ggplot needs your data to be a data frame object
-lorenz_data_frame <- data.frame(p = lorenz_data$p, L = lorenz_data$L)
+lorenz_data_frame <- data.frame(p = lorenz_data$p, 
+                                L = lorenz_data$L)
 
 ggplot(lorenz_data_frame, aes(p, L)) +
   geom_segment(aes(x = 0,
@@ -135,7 +134,7 @@ If you find the Gini coefficient particularly interesting, then have a look at s
 Entropy is a measure of disorder within a distribution; higher entropy means that a system is more disordered and therefore harder to predict. If you want a refresher, with a nice worked through example, I found a great Youtube video here - https://www.youtube.com/watch?v=ErfnhcEV1O8&list=LLpnMwTVTiriukuWO3AenRSA&index=2&t=333s 
 Only the first few minutes are relevant for understanding Shannon entropy (they guy then goes onto discuss cross-entropy) but it really is worth a look.
 
-We can use the `entropy` package to calculate entropy in observed data.
+We can use the `entropy` package to calculate entropy in some data.
 
 Let's work through an example with the distribution of number of gears in the mtcars dataset:
 
@@ -145,21 +144,21 @@ library(entropy)
 # take a look at the values in the 'gears' variable in the mtcars dataset
 mtcars$gear
 
-#the entropy function in the entropy package estimates the Shannon entropy in a variable when given the observed counts, so we count how often each type of gear occurs
+#the entropy function in the entropy package estimates the Shannon entropy in a variable, if we give it the observed counts. Therefore, we first count how often each type of gear occurs
 gear_frequencies <- mtcars %>% 
   count(gear) %>% 
-  mutate(equal_counts = 1) # the maximum entropy is what we'd get if each gear was equally likely to occur - to calculate this, let's add a column we set to always be '1'
+  mutate(equal_counts = 1) # the maximum entropy is when each type of gear is equally likely to occur - to calculate this, we also add a column where the count is '1' for all values
 
-#let's have a look
+#have a look at the data frame
 gear_frequencies
 
-# hand the counts to the entropy function - set the unit to 'log2' to get the information entropy measured in bits
+# calculate the actual entropy, by giving the column with counts to the entropy function - set the unit to 'log2' to get the entropy in bits
 ent_actual <- entropy(gear_frequencies$n, unit = "log2")
 
-# to get the max entropy, give it the column where we set equal counts
+# calculate the max entropy by giving it the column with equal counts
 ent_max <- entropy(gear_frequencies$equal_counts, unit = "log2")
   
-# normalized entropy is then the proportion of actual entropy to the maximum possible
+# the normalized entropy is the proportion of actual entropy to the maximum possible
 ent_norm <- ent_actual / ent_max
 
 ```
@@ -168,7 +167,7 @@ The entropy for gears in the mtcars dataset is `r ent_actual`, the maximum entro
 
 
 ### Example with wikipedia data
-Here is an example which uses wikipedia data that came from this query:
+Here is an example which uses wikipedia data that came from this query on [Quarry](https://quarry.wmflabs.org):
 
 USE simplewiki_p;
 SELECT * FROM page LIMIT 100;
@@ -179,7 +178,7 @@ page_query <- read.csv("2020-02-26_page_query.csv")
 ```
 
 
-Now, let's draw a histogram:
+Draw a histogram:
 
 ```{r}
 ggplot(page_query, aes(page_len)) +
@@ -208,48 +207,46 @@ ggplot(lorenz_data_frame, aes(p, L)) +
 Let's calculate the entropy for page length
 
 ```{r}
+# create a dataframe with counts
 page_length_frequencies <- page_query %>% 
   count(page_len) %>% 
-  mutate(equal_counts = 1) # the maximum entropy is what we'd get if each gear was equally likely to occur - to calculate this, let's add a column we set to always be '1'
+  mutate(equal_counts = 1)
 
-# have a look
 page_length_frequencies
 
-# hand the counts to the entropy function - set the unit to 'log2' to get the information entropy measured in bits
+# calculate actual entropy
 ent_actual <- entropy(page_length_frequencies$n, unit = "log2")
 
-# to get the max entropy, give it the column where we set equal counts
+# calculate max entropy
 ent_max <- entropy(page_length_frequencies$equal_counts, unit = "log2")
 
-# normalized entropy is then the proportion of actual entropy to the maximum possible
+# calculate normalised entropy
 ent_norm <- ent_actual / ent_max
 
 ```
 
 In this case, the entropy is `r ent_actual`, max entropy is `r ent_max` and normalised entropy is `r ent_norm`.
 
-Why is the entropy so high? Because we're treating each possible pagelength as a unique value - an exact page length is unlikely to occur multiple times.
+Why is the entropy so high? Because we treat each pagelength as a unique value - and the same exact page length is unlikely to occur multiple times.
 
-Another approach is to bin our data the some way - just like our histogram does - and then calculate how easy it is for us to guess.
-
-Try to play around with the number of bins and see how it affects the entropy!
+Another approach is to bin our data in some way - just like a histogram does. We do this in the example below - try to play around with the number of bins and see how it affects the entropy!
 
 ```{r}
 page_length_frequencies_binned <- page_query %>% 
   mutate(bin = cut_interval(page_len, 30)) %>%  #cut into 30 equally spaced bins
-  count(bin, .drop = FALSE) %>%  #cut how many are in each (.drop = FALSE means that we keep the values that were zero)
+  count(bin, .drop = FALSE) %>%  #count how many are in each (.drop = FALSE means that we keep the values that are zero)
   mutate(equal_counts = 1)
 
 # have a look
 page_length_frequencies_binned
 
-# hand the counts to the entropy function - set the unit to 'log2' to get the information entropy measured in bits
+# calculate actual entropy
 ent_actual <- entropy(page_length_frequencies_binned$n, unit = "log2")
 
-# to get the max entropy, give it the column where we set equal counts
+# calculate max entropy
 ent_max <- entropy(page_length_frequencies_binned$equal_counts, unit = "log2")
 
-# normalized entropy is then the proportion of actual entropy to the maximum possible
+# calculate normalised entropy
 ent_norm <- ent_actual / ent_max
 
 ```
