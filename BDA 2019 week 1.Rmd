@@ -1,7 +1,7 @@
 ---
 title: "Big Data Analytics Week 1"
 author: "Ulrik Lyngs (based on Bertie Vidgen's materials)"
-date: "2020-02-17"
+date: "Last updated: 9 March 2020"
 output: html_document
 ---
  
