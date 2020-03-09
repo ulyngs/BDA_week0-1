@@ -1,8 +1,9 @@
 ---
 title: "Big Data Analytics Week 0"
 author: "Ulrik Lyngs (based on Bertie Vidgen's materials)"
-date: "2020-02-17"
+date: '2020-02-17'
 output:
+  pdf_document: default
   html_document: default
 ---
  
@@ -284,13 +285,14 @@ ggplot(df3,
        aes(UK, US, 
            color = happiness)) + 
   geom_line() + 
-  ggthemes::theme_wsj()
+  ggthemes::theme_economist()
 
 # Excel theme
 ggplot(df3, 
        aes(UK, US, 
            color = happiness)) + 
-  geom_line() + 
+  geom_line() +
+  theme_base() +
   ggthemes::theme_excel() # but don't actually use this as it looks like trash
 ```
 
@@ -334,6 +336,8 @@ rBDA::cor_plot(out)
 rBDA::cor_scatter(df.test2$x,
                   df.test2$y,
                   list(50,100,250,500))
+
+
 
 ```
 
