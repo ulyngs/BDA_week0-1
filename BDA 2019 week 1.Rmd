@@ -13,6 +13,8 @@ Set up the R workspace and load the required packages/data.
 ```{r setup, echo=FALSE, warning=FALSE, message=FALSE}
 options(scipen = 10) #makes the output more readable by increasing the number of values before scientific notation is used.
 
+
+
 fun_check_packages <- function(x){
   for (i in seq(1,length(x))){
     if (!x[i] %in% installed.packages()){
@@ -37,7 +39,7 @@ mtcars
 ### Histogram
 First, make a histogram to show the distribution of the variable:
 
-```{r hist, echo = F}
+```{r hist}
 ggplot(mtcars,
        aes(disp)) +
   geom_histogram(bins = 10)
@@ -48,7 +50,7 @@ ggplot(mtcars,
 Second, calculate the mode of the variable, and how many values are equal to it.
 Unfortunately, R does not have an in-built mode function, so we have to create one:
 
-```{r mode, echo = F}
+```{r mode}
 getMode <- function(x, na.rm = FALSE) {
   if(na.rm){
     x = x[!is.na(x)]
@@ -92,7 +94,7 @@ Sal Khan (the Khan Academy founder) has a crystal clear explanation of the Gini 
 
 We can calculate the gini coefficient using the `ineq` function from the `ineq` package, and plot the Lorenz curve with base R:
 
-```{r gini, echo = F}
+```{r gini}
 ineq::ineq(mtcars$disp,
            type='Gini') #calculate the gini coefficient for the variable disp
 
@@ -135,7 +137,9 @@ Only the first few minutes are relevant for understanding Shannon entropy (they 
 
 We can use the `entropy` package to calculate entropy in observed data.
 
-```{r shannon-entropy, echo = F}
+Let's work through an example with the distribution of number of gears in the mtcars dataset:
+
+```{r shannon-entropy}
 library(entropy)
 
 # take a look at the values in the 'gears' variable in the mtcars dataset
@@ -156,13 +160,15 @@ ent_actual <- entropy(gear_frequencies$n, unit = "log2")
 ent_max <- entropy(gear_frequencies$equal_counts, unit = "log2")
   
 # normalized entropy is then the proportion of actual entropy to the maximum possible
-ent_actual / ent_max
+ent_norm <- ent_actual / ent_max
 
 ```
 
+The entropy for gears in the mtcars dataset is `r ent_actual`, the maximum entropy is `r ent_max`, and the normalised entropy is `r ent_norm`.
+
 
 ### Example with wikipedia data
-Here is an example, using wikipedia data that came from this query:
+Here is an example which uses wikipedia data that came from this query:
 
 USE simplewiki_p;
 SELECT * FROM page LIMIT 100;
@@ -216,9 +222,11 @@ ent_actual <- entropy(page_length_frequencies$n, unit = "log2")
 ent_max <- entropy(page_length_frequencies$equal_counts, unit = "log2")
 
 # normalized entropy is then the proportion of actual entropy to the maximum possible
-ent_actual / ent_max
+ent_norm <- ent_actual / ent_max
 
 ```
+
+In this case, the entropy is `r ent_actual`, max entropy is `r ent_max` and normalised entropy is `r ent_norm`.
 
 Why is the entropy so high? Because we're treating each possible pagelength as a unique value - an exact page length is unlikely to occur multiple times.
 
@@ -242,10 +250,11 @@ ent_actual <- entropy(page_length_frequencies_binned$n, unit = "log2")
 ent_max <- entropy(page_length_frequencies_binned$equal_counts, unit = "log2")
 
 # normalized entropy is then the proportion of actual entropy to the maximum possible
-ent_actual / ent_max
+ent_norm <- ent_actual / ent_max
 
 ```
 
+Now, the entropy is `r ent_actual`, max entropy is `r ent_max` and normalised entropy is `r ent_norm`.
 
 
 
