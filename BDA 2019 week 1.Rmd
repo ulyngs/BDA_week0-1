@@ -19,7 +19,7 @@ fun_check_packages <- function(x){
     install.packages(x[i])}
     library(x[i],character.only=TRUE)}
 }
-packs = c('ineq','ggplot2', 'entropy', 'cowplot', 'dplyr')
+packs = c('ineq','ggplot2', 'entropy', 'dplyr')
 fun_check_packages(packs)
 
 ```
@@ -136,22 +136,27 @@ Only the first few minutes are relevant for understanding Shannon entropy (they 
 We can use the `entropy` package to calculate entropy in observed data.
 
 ```{r shannon-entropy, echo = F}
-?entropy.empirical # info on params you can adjust
+library(entropy)
 
-# take a look at the values in the 'horsepower' variable in the mtcars dataset
-mtcars$hp
+# take a look at the values in the 'gears' variable in the mtcars dataset
+mtcars$gear
 
-# calculate actual entropy
-ent_calc <- entropy::entropy.empirical(mtcars$hp, unit="log2")
+#the entropy function in the entropy package estimates the Shannon entropy in a variable when given the observed counts, so we count how often each type of gear occurs
+gear_frequencies <- mtcars %>% 
+  count(gear) %>% 
+  mutate(equal_counts = 1) # the maximum entropy is what we'd get if each gear was equally likely to occur - to calculate this, let's add a column we set to always be '1'
 
-# calculate max entropy
-ent_max <- log2(sum(mtcars$hp))
+#let's have a look
+gear_frequencies
 
-# calculate normalized entropy
-ent_calc / ent_max
+# hand the counts to the entropy function - set the unit to 'log2' to get the information entropy measured in bits
+ent_actual <- entropy(gear_frequencies$n, unit = "log2")
 
-# See here for some discussions about implementing entropy: https://math.stackexchange.com/questions/395121/how-entropy-scales-with-sample-size
-
+# to get the max entropy, give it the column where we set equal counts
+ent_max <- entropy(gear_frequencies$equal_counts, unit = "log2")
+  
+# normalized entropy is then the proportion of actual entropy to the maximum possible
+ent_actual / ent_max
 
 ```
 
@@ -193,6 +198,54 @@ ggplot(lorenz_data_frame, aes(p, L)) +
 # based on: https://stackoverflow.com/questions/22679493/how-to-plot-a-nice-lorenz-curve-for-factors-in-r-ggplot
 
 ```
+
+Let's calculate the entropy for page length
+
+```{r}
+page_length_frequencies <- page_query %>% 
+  count(page_len) %>% 
+  mutate(equal_counts = 1) # the maximum entropy is what we'd get if each gear was equally likely to occur - to calculate this, let's add a column we set to always be '1'
+
+# have a look
+page_length_frequencies
+
+# hand the counts to the entropy function - set the unit to 'log2' to get the information entropy measured in bits
+ent_actual <- entropy(page_length_frequencies$n, unit = "log2")
+
+# to get the max entropy, give it the column where we set equal counts
+ent_max <- entropy(page_length_frequencies$equal_counts, unit = "log2")
+
+# normalized entropy is then the proportion of actual entropy to the maximum possible
+ent_actual / ent_max
+
+```
+
+Why is the entropy so high? Because we're treating each possible pagelength as a unique value - an exact page length is unlikely to occur multiple times.
+
+Another approach is to bin our data the some way - just like our histogram does - and then calculate how easy it is for us to guess.
+
+Try to play around with the number of bins and see how it affects the entropy!
+
+```{r}
+page_length_frequencies_binned <- page_query %>% 
+  mutate(bin = cut_interval(page_len, 30)) %>%  #cut into 30 equally spaced bins
+  count(bin, .drop = FALSE) %>%  #cut how many are in each (.drop = FALSE means that we keep the values that were zero)
+  mutate(equal_counts = 1)
+
+# have a look
+page_length_frequencies_binned
+
+# hand the counts to the entropy function - set the unit to 'log2' to get the information entropy measured in bits
+ent_actual <- entropy(page_length_frequencies_binned$n, unit = "log2")
+
+# to get the max entropy, give it the column where we set equal counts
+ent_max <- entropy(page_length_frequencies_binned$equal_counts, unit = "log2")
+
+# normalized entropy is then the proportion of actual entropy to the maximum possible
+ent_actual / ent_max
+
+```
+
 
 
 
